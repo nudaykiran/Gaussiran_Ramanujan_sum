@@ -1,0 +1,81 @@
+# This code demonstrates that the Gaussian-Ramanujan sum is 
+# the difference of cardinality of even weight codes and odd weight codes
+# of the Shifted Varshamo-Tenengoltas deletion correction codes. 
+# Compare these results with direct (trigonometric sum based) calculation. 
+def counting_grs(k,kk):
+    s=(k-1)//2
+    S=[]
+    Even=[]
+    Odd=[]
+    SC=[]
+    for t in range(k):
+        T=[]
+        for j in range(s+1):
+            T.append(t+j*k)
+        print("#####")
+        sigma=0
+        for j in T:
+            L=Partitions(j, max_slope=-1).list()
+            M=[]
+            for l in L:
+                if l!=[] and max(l) < kk+1:
+                    M.append(l)
+            sc=[]
+            for l in M:
+                if l==Partition(l).conjugate():
+                    sc.append(l)
+            #print(j,"sc",sc)
+            E=[]
+            O=[]
+            for l in M:
+                if len(l)%2==0:
+                    l=Partition(l).conjugate()
+                    l=l+[0]*(k-len(l))
+                    l.reverse()
+                    E.append(l)
+                else:
+                    l=Partition(l).conjugate()
+                    l=l+[0]*(k-len(l))
+                    l.reverse()
+                    O.append(l)
+            sigma=sigma+(len(E)-len(O))
+            Even.append(E)
+            Odd.append(O)
+            SC.append(sc)
+            print(j,len(E),"even", E)
+            print(j,len(O),"odd",O)
+
+        if t==0:
+            sigma=sigma+1
+        S.append(sigma)
+    return S,Even,Odd
+
+def convert(S,k):
+    T=[]
+    for l in S:
+        m=[1]
+        for j in range(len(l)):
+            if l[-j]<l[-j+1]:
+                m.append(1)
+            else:
+                m.append(0)
+        m.reverse()
+        if len(m) < k-1:
+            m=m+zeros(k-1-len(m))
+        T.append(m)
+    return T
+
+# length atmost k-1
+# appearance of all elements atleast once
+k=9
+s=6
+(S,E,O)=counting_grs(k,s)
+print("The Gaussian Ramanujan sum for "+str(k)+" and "+str(s)+" is :",S)
+︡
+
+
+
+
+
+
+
