@@ -1,0 +1,112 @@
+︠d089db07-2e05-483f-98e6-90a54d3ad76d︠
+# A restricted q-product based generalization Ramanujan sum, which we call as Gaussian-Ramanujan sum
+
+# Usage: GRS-table(k) gives the table of values for k, where k is a positive integer. 
+
+
+def GRS(k,j):
+    jj=j
+    P=PolynomialRing(QQ,'x')
+    p=P(1)
+    for s in range(1,j+1):
+        p*=P(1-x^s)
+    phi=cyclotomic_polynomial(k)
+    R=[]
+    for s in range(1,k+1):
+        if phi(E(k)^s) == 0:
+            R.append(E(k)^s)
+
+    L=[]
+    for t in range(k):
+        sigma=0
+        for xi in R:
+            sigma+=((xi)^(t))/p(xi)
+        L.append(sigma)
+
+    return ['j='+str(jj)]+L
+
+def RS(k,j):
+    L=GRS(k,k-1)
+    L=L[1:]
+    return k*L[j%k]
+
+def GRS_element(k,kk,j):
+    L=GRS(k,kk)
+    L=L[1:]
+    return L[j%k]
+
+def GRS_gen(k,m,j):
+    P=PolynomialRing(QQ,'x')
+    p=P(1)
+    q=P(1)
+    for s in range(1,j+1):
+        p*=P(1-x^s)
+        q*=P(1-x^(m+1-s))
+    phi=cyclotomic_polynomial(k)
+    R=[]
+    for s in range(1,k+1):
+        if phi(E(k)^s) == 0:
+            R.append(E(k)^s)
+    L=[]
+    for t in range(k):
+        sigma = 0
+        for xi in R:
+            sigma+=(xi^t)*q(xi)/p(xi)
+        L.append(sigma)
+
+    return L
+
+def GRS_table(k):
+    rows = [['t=']+range(k)]
+    for j in range(k):
+        rows.append(GRS(k,j))
+    return table(rows,frame=True)
+
+def GRS_poly(k,j):
+    P=PolynomialRing(QQ,'x')
+    L=GRS(k,j)
+    L=L[1:]
+    p=P(0)
+    l=len(L)
+    for i in range(l):
+        p=p+P(L[i]*x^(i))
+    return p
+
+def counting_grs(k,kk):
+    s=(k-1)//2
+    S=[]
+    for t in range(k):
+        T=[]
+        for j in range(s+1):
+            T.append(t+j*k)
+        sigma=0
+        for j in T:
+            L=Partitions(j, max_slope=-1).list()
+            M=[]
+            for l in L:
+                if l!=[] and max(l) < kk+1:
+                    M.append(l)
+            E=[]
+            O=[]
+            for l in M:
+                if len(l)%2==0:
+                    E.append(l)
+                else:
+                    O.append(l)
+            sigma=sigma+(len(E)-len(O))
+
+        if t==0:
+            sigma=sigma+1
+        S.append(sigma)
+    return S
+
+GRS_table(5)
+
+
+
+
+
+
+
+
+
